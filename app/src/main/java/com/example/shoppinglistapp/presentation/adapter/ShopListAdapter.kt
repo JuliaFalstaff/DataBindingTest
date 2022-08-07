@@ -2,6 +2,7 @@ package com.example.shoppinglistapp.presentation.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppinglistapp.databinding.ItemShopDisabledBinding
 import com.example.shoppinglistapp.databinding.ItemShopEnabledBinding
@@ -11,8 +12,10 @@ class ShopListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var shopList = listOf<ShopItem>()
         set(value) {
-            field = value.sortedBy { it.id }
-            notifyDataSetChanged()
+            val callback = ShopListDiffCallback(shopList, value)
+            val diffResult = DiffUtil.calculateDiff(callback)
+            diffResult.dispatchUpdatesTo(this)
+            field = value
         }
 
     var onLongItemClickListener: ((ShopItem)-> Unit)? = null
