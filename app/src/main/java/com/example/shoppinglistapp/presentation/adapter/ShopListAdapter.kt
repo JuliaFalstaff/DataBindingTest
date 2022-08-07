@@ -2,47 +2,39 @@ package com.example.shoppinglistapp.presentation.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppinglistapp.databinding.ItemShopDisabledBinding
 import com.example.shoppinglistapp.databinding.ItemShopEnabledBinding
 import com.example.shoppinglistapp.domain.ShopItem
 
-class ShopListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class ShopListAdapter : ListAdapter<ShopItem, RecyclerView.ViewHolder>(ShopItemDiffCallback()) {
 
-    var shopList = listOf<ShopItem>()
-        set(value) {
-            val callback = ShopListDiffCallback(shopList, value)
-            val diffResult = DiffUtil.calculateDiff(callback)
-            diffResult.dispatchUpdatesTo(this)
-            field = value
-        }
-
-    var onLongItemClickListener: ((ShopItem)-> Unit)? = null
-    var onClickListener: ((ShopItem)-> Unit)? = null
+    var onLongItemClickListener: ((ShopItem) -> Unit)? = null
+    var onClickListener: ((ShopItem) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
             ENABLED -> ShopViewHolderEnabled(
-                ItemShopEnabledBinding.inflate(
-                    LayoutInflater.from(
-                        parent.context
-                    ), parent, false
-                )
+                    ItemShopEnabledBinding.inflate(
+                            LayoutInflater.from(
+                                    parent.context
+                            ), parent, false
+                    )
             )
             DISABLED -> ShopViewHolderDisabled(
-                ItemShopDisabledBinding.inflate(
-                    LayoutInflater.from(
-                        parent.context
-                    ), parent, false
-                )
+                    ItemShopDisabledBinding.inflate(
+                            LayoutInflater.from(
+                                    parent.context
+                            ), parent, false
+                    )
             )
             else -> throw RuntimeException(VIEWHOLDER_TYPE_ERROR)
         }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val item = shopList[position]
+        val item = getItem(position)
         when (holder.itemViewType) {
             ENABLED -> {
                 holder as ShopViewHolderEnabled
@@ -55,10 +47,8 @@ class ShopListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         }
     }
 
-    override fun getItemCount() = shopList.size
-
     override fun getItemViewType(position: Int): Int {
-        val item = shopList[position]
+        val item = getItem(position)
         return if (item.enabled) {
             ENABLED
         } else {
@@ -66,12 +56,8 @@ class ShopListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         }
     }
 
-    override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
-        super.onViewRecycled(holder)
-    }
-
     inner class ShopViewHolderEnabled(private val binding: ItemShopEnabledBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+            RecyclerView.ViewHolder(binding.root) {
         fun bind(item: ShopItem) {
             binding.textViewCount.text = item.name
             binding.textViewCount.text = item.count.toString()
@@ -86,7 +72,7 @@ class ShopListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     }
 
     inner class ShopViewHolderDisabled(private val binding: ItemShopDisabledBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+            RecyclerView.ViewHolder(binding.root) {
         fun bind(item: ShopItem) {
             binding.textViewCount.text = item.name
             binding.textViewCount.text = item.count.toString()
@@ -99,11 +85,6 @@ class ShopListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             }
         }
     }
-
-    interface OnLongItemClickListener {
-        fun onLingClick(shopItem: ShopItem)
-    }
-
 
     companion object {
         const val ENABLED = 100
