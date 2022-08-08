@@ -21,7 +21,7 @@
             android:id="@+id/editTextNameItem"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/name_item"
+            android:hint="@string/name_item"
             android:inputType="textCapWords" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -50,7 +50,7 @@
         android:layout_margin="16dp"
         android:background="@color/teal_700"
         android:textColor="@color/white"
-        android:text="@string/save_button"
+        android:hint="@string/save_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

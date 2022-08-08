@@ -25,7 +25,6 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.shopList.observe(this, Observer {
             adapter.submitList(it)
-
         })
     }
 
@@ -36,6 +35,15 @@ class MainActivity : AppCompatActivity() {
         binding.recyclerViewShopList.recycledViewPool.setMaxRecycledViews(ShopListAdapter.DISABLED, 15)
         setAdapterClickListeners()
         setSwipeListener()
+        addNewItem()
+    }
+
+    private fun addNewItem() {
+       binding.fabAddItem.setOnClickListener {
+           val intent = ShopItemActivity.newIntentAddItem(this)
+           startActivity(intent)
+           Log.d("TAG", "add intent")
+       }
     }
 
     private fun setSwipeListener() {
@@ -59,7 +67,9 @@ class MainActivity : AppCompatActivity() {
             viewModel.changeEnableState(it)
         }
         adapter.onClickListener = {
-            Log.d("TAG", "listener")
+            val intent = ShopItemActivity.newIntentEditItem(this, it.id)
+            startActivity(intent)
+            Log.d("TAG", "edit intent")
         }
     }
 }
