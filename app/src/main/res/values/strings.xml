@@ -3,4 +3,6 @@
     <string name="save_button">Save</string>
     <string name="name_item">Name</string>
     <string name="count_item">count</string>
+    <string name="error_input_count">Error input count</string>
+    <string name="error_input_name">Error Input name</string>
 </resources>

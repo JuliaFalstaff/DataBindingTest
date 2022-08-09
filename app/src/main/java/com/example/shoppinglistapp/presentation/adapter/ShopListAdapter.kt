@@ -59,7 +59,7 @@ class ShopListAdapter : ListAdapter<ShopItem, RecyclerView.ViewHolder>(ShopItemD
     inner class ShopViewHolderEnabled(private val binding: ItemShopEnabledBinding) :
             RecyclerView.ViewHolder(binding.root) {
         fun bind(item: ShopItem) {
-            binding.textViewCount.text = item.name
+            binding.textViewName.text = item.name
             binding.textViewCount.text = item.count.toString()
             itemView.setOnLongClickListener {
                 onLongItemClickListener?.invoke(item)
@@ -74,7 +74,7 @@ class ShopListAdapter : ListAdapter<ShopItem, RecyclerView.ViewHolder>(ShopItemD
     inner class ShopViewHolderDisabled(private val binding: ItemShopDisabledBinding) :
             RecyclerView.ViewHolder(binding.root) {
         fun bind(item: ShopItem) {
-            binding.textViewCount.text = item.name
+            binding.textViewName.text = item.name
             binding.textViewCount.text = item.count.toString()
             itemView.setOnLongClickListener {
                 onLongItemClickListener?.invoke(item)

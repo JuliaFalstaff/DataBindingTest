@@ -39,7 +39,7 @@
             android:id="@+id/editTextCountItem"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/count_item"
+            android:hint="@string/count_item"
             android:inputType="number" />
     </com.google.android.material.textfield.TextInputLayout>
 
