@@ -2,18 +2,11 @@ package com.example.shoppinglistapp.presentation
 
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import androidx.core.widget.addTextChangedListener
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
+import androidx.appcompat.app.AppCompatActivity
 import com.example.shoppinglistapp.R
-import com.example.shoppinglistapp.databinding.ActivityMainBinding
 import com.example.shoppinglistapp.databinding.ActivityShopItemBinding
 import com.example.shoppinglistapp.domain.ShopItem
-import java.lang.RuntimeException
 
 class ShopItemActivity : AppCompatActivity() {
 
@@ -28,81 +21,21 @@ class ShopItemActivity : AppCompatActivity() {
         binding = ActivityShopItemBinding.inflate(layoutInflater)
         setContentView(binding.root)
         parseIntent()
-        viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
-        addTextChangeListeners()
-        launchRightMode()
-        observeViewModel()
+        if (savedInstanceState == null) {
+            launchRightMode()
+        }
     }
 
-    private fun observeViewModel()  {
-        viewModel.errorInputCount.observe(this) {
-            val message = if (it) {
-                getString(R.string.error_input_count)
-            } else {
-                null
-            }
-            binding.textInputLayoutCountItem.error = message
-        }
-        viewModel.errorInputName.observe(this) {
-            val message = if (it) {
-                getString(R.string.error_input_name)
-            } else {
-                null
-            }
-            binding.textInputLayoutNameItem.error = message
-        }
-        viewModel.shouldCloseActivity.observe(this) {
-            finish()
-        }
-    }
 
     private fun launchRightMode() {
-        when (screenMode) {
-            MODE_EDIT -> launchEditMode()
-            MODE_ADD -> launchAddMode()
+        val fragment = when (screenMode) {
+            MODE_EDIT -> ShopItemFragment.newInstanceEditItem(shopItemId)
+            MODE_ADD -> ShopItemFragment.newInstanceAddItem()
+            else -> throw RuntimeException("Unknown screen mode $screenMode")
         }
-    }
-
-    private fun addTextChangeListeners() = with(binding) {
-        editTextNameItem.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                viewModel.resetErrorName()
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-            }
-        })
-        editTextCountItem.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                viewModel.resetErrorCount()
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-            }
-        })
-    }
-
-    private fun launchEditMode()  {
-        viewModel.getShopItem(shopItemId)
-        viewModel.shopItem.observe(this) {
-            binding.editTextNameItem.setText(it.name.toString())
-            binding.editTextCountItem.setText(it.count.toString())
-        }
-        binding.saveButton.setOnClickListener {
-            viewModel.editShopItem(binding.editTextNameItem.text?.toString(), binding.editTextCountItem.text?.toString())
-        }
-    }
-
-    private fun launchAddMode() {
-        binding.saveButton.setOnClickListener {
-            viewModel.addShopItem(binding.editTextNameItem.text?.toString(), binding.editTextCountItem.text?.toString())
-        }
+        supportFragmentManager.beginTransaction()
+                .replace(R.id.shop_item_container, fragment)
+                .commit()
     }
 
     private fun parseIntent() {

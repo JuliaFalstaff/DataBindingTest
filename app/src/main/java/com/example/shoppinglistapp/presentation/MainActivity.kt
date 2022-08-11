@@ -3,10 +3,13 @@ package com.example.shoppinglistapp.presentation
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.example.shoppinglistapp.R
 import com.example.shoppinglistapp.databinding.ActivityMainBinding
 import com.example.shoppinglistapp.presentation.adapter.ShopListAdapter
 
@@ -15,11 +18,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: MainViewModel
     private lateinit var adapter: ShopListAdapter
     lateinit var binding: ActivityMainBinding
+    private var shopItemContainer: FragmentContainerView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        shopItemContainer = binding.shopItemContainer
         setRV()
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
@@ -38,12 +43,27 @@ class MainActivity : AppCompatActivity() {
         addNewItem()
     }
 
+    private fun isPaneMode(): Boolean {
+          return shopItemContainer == null
+    }
+
+    private fun launchFragment(fragment: Fragment) {
+        supportFragmentManager.popBackStack()
+        supportFragmentManager.beginTransaction()
+                .replace(R.id.shop_item_container, fragment)
+                .addToBackStack(null)
+                .commit()
+    }
+
     private fun addNewItem() {
-       binding.fabAddItem.setOnClickListener {
-           val intent = ShopItemActivity.newIntentAddItem(this)
-           startActivity(intent)
-           Log.d("TAG", "add intent")
-       }
+            binding.fabAddItem.setOnClickListener {
+                if (isPaneMode()) {
+                    val intent = ShopItemActivity.newIntentAddItem(this)
+                    startActivity(intent)
+                } else {
+                    launchFragment(ShopItemFragment.newInstanceAddItem())
+                }
+            }
     }
 
     private fun setSwipeListener() {
@@ -66,10 +86,14 @@ class MainActivity : AppCompatActivity() {
         adapter.onLongItemClickListener = {
             viewModel.changeEnableState(it)
         }
+
         adapter.onClickListener = {
-            val intent = ShopItemActivity.newIntentEditItem(this, it.id)
-            startActivity(intent)
-            Log.d("TAG", "edit intent")
+            if (isPaneMode()) {
+                val intent = ShopItemActivity.newIntentEditItem(this, it.id)
+                startActivity(intent)
+            } else {
+                launchFragment(ShopItemFragment.newInstanceEditItem(it.id))
+            }
         }
     }
 }
