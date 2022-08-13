@@ -3,12 +3,13 @@ package com.example.shoppinglistapp.presentation
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.shoppinglistapp.R
 import com.example.shoppinglistapp.databinding.ActivityShopItemBinding
 import com.example.shoppinglistapp.domain.ShopItem
 
-class ShopItemActivity : AppCompatActivity() {
+class ShopItemActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedListener {
 
     lateinit var binding: ActivityShopItemBinding
     private var screenMode = MODE_UNKNOWN
@@ -75,5 +76,9 @@ class ShopItemActivity : AppCompatActivity() {
             intent.putExtra(EXTRA_SHOP_ITEM_ID, id)
             return intent
         }
+    }
+
+    override fun onEditFinished() {
+        finish()
     }
 }

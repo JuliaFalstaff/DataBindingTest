@@ -1,8 +1,10 @@
 package com.example.shoppinglistapp.presentation
 
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,15 +20,29 @@ class ShopItemFragment : Fragment() {
     private var screenMode: String = MODE_UNKNOWN
     private var shopItemId: Int = ShopItem.UNDEFINED_ID
     private lateinit var binding: FragmentShopItemBinding
+    private lateinit var onEditingFinishedListener: OnEditingFinishedListener
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is OnEditingFinishedListener) {
+            onEditingFinishedListener = context
+        } else {
+            throw RuntimeException("Activity must implement onEditingFinishedListener")
+        }
+        Log.d("LifeCycle Fragmment", "onAttach")
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         parseParams()
+        Log.d("LifeCycle Fragmment", "onCreate")
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        Log.d("LifeCycle Fragmment", "onCreateView")
         binding = FragmentShopItemBinding.inflate(inflater, container, false)
         return binding.root
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -35,6 +51,42 @@ class ShopItemFragment : Fragment() {
         addTextChangeListeners()
         launchRightMode()
         observeViewModel()
+        Log.d("LifeCycle Fragmment", "onViewCreated")
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Log.d("LifeCycle Fragmment", "onStart")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d("LifeCycle Fragmment", "onResume")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d("LifeCycle Fragmment", "onPause")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.d("LifeCycle Fragmment", "onStop")
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Log.d("LifeCycle Fragmment", "onDestroyView")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("LifeCycle Fragmment", "onDestroy")
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        Log.d("LifeCycle Fragmment", "onDetach")
     }
 
     private fun observeViewModel() {
@@ -55,7 +107,7 @@ class ShopItemFragment : Fragment() {
             binding.textInputLayoutNameItem.error = message
         }
         viewModel.shouldCloseActivity.observe(viewLifecycleOwner) {
-            activity?.onBackPressed()
+            onEditingFinishedListener.onEditFinished()
         }
     }
 
@@ -149,5 +201,9 @@ class ShopItemFragment : Fragment() {
                 }
             }
         }
+    }
+
+    interface OnEditingFinishedListener {
+        fun onEditFinished()
     }
 }

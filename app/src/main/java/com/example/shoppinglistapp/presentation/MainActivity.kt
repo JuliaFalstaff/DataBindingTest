@@ -1,7 +1,9 @@
 package com.example.shoppinglistapp.presentation
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
@@ -13,7 +15,7 @@ import com.example.shoppinglistapp.R
 import com.example.shoppinglistapp.databinding.ActivityMainBinding
 import com.example.shoppinglistapp.presentation.adapter.ShopListAdapter
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedListener {
 
     private lateinit var viewModel: MainViewModel
     private lateinit var adapter: ShopListAdapter
@@ -21,7 +23,7 @@ class MainActivity : AppCompatActivity() {
     private var shopItemContainer: FragmentContainerView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+        super.onCreate(savedInstanceState)   
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         shopItemContainer = binding.shopItemContainer
@@ -95,5 +97,14 @@ class MainActivity : AppCompatActivity() {
                 launchFragment(ShopItemFragment.newInstanceEditItem(it.id))
             }
         }
+    }
+
+    override fun onEditFinished() {
+        Toast.makeText(this, "Success", Toast.LENGTH_SHORT).show()
+        supportFragmentManager.popBackStack()
+    }
+
+    companion object {
+        private val PREF_COUNT = "preferences"
     }
 }
